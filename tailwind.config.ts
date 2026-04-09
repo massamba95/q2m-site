@@ -9,8 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        brand: {
+          blue: '#1a3a6b',
+          'blue-light': '#2a5298',
+          'blue-dark': '#0f2548',
+          gold: '#d4952a',
+          'gold-light': '#e8b560',
+          'gold-dark': '#b07a1e',
+        },
+      },
+      fontFamily: {
+        sans: ['var(--font-geist-sans)', 'Arial', 'sans-serif'],
       },
     },
   },
