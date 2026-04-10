@@ -48,7 +48,6 @@ export function Catalogue() {
           .from('products')
           .select('id, ref_produit, designation, category_id, selling_price, unit, is_active')
           .eq('is_active', true)
-          .gt('selling_price', 0)
           .order('designation'),
         supabase
           .from('categories')
@@ -184,8 +183,14 @@ export function Catalogue() {
                             <p className="text-xs text-gray-400 mt-0.5">{p.ref_produit}</p>
                           </div>
                           <div className="flex items-end justify-between mt-3">
-                            <span className="text-lg font-bold text-brand-blue">{formatFCFA(p.selling_price)}</span>
-                            <span className="text-xs text-gray-400">/ {p.unit}</span>
+                            {p.selling_price > 0 ? (
+                              <>
+                                <span className="text-lg font-bold text-brand-blue">{formatFCFA(p.selling_price)}</span>
+                                <span className="text-xs text-gray-400">/ {p.unit}</span>
+                              </>
+                            ) : (
+                              <span className="text-sm text-gray-400 italic">Prix en magasin</span>
+                            )}
                           </div>
                         </div>
                       ))}
