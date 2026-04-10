@@ -7,11 +7,15 @@ interface Product {
   id: string
   ref_produit: string
   designation: string
-  category_name: string | null
+  category_id: string | null
   selling_price: number
   unit: string
-  stock_actual: number
   is_active: boolean
+}
+
+interface Category {
+  id: string
+  name: string
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -31,30 +35,46 @@ function formatFCFA(n: number) {
 }
 
 export function Catalogue() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<(Product & { category_name: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from('v_product_stock')
-        .select('id, ref_produit, designation, category_name, selling_price, unit, stock_actual, is_active')
-        .eq('is_active', true)
-        .gt('selling_price', 0)
-        .order('category_name')
-        .order('designation')
+      // Fetch products and categories separately (both have public read RLS)
+      const [prodRes, catRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, ref_produit, designation, category_id, selling_price, unit, is_active')
+          .eq('is_active', true)
+          .gt('selling_price', 0)
+          .order('designation'),
+        supabase
+          .from('categories')
+          .select('id, name'),
+      ])
 
-      setProducts(data || [])
+      const cats = (catRes.data || []) as Category[]
+      const catMap = cats.reduce<Record<string, string>>((acc, c) => {
+        acc[c.id] = c.name
+        return acc
+      }, {})
+
+      const prods = ((prodRes.data || []) as Product[]).map(p => ({
+        ...p,
+        category_name: p.category_id ? catMap[p.category_id] || 'Autres' : 'Autres',
+      }))
+
+      setProducts(prods)
       setLoading(false)
     }
     load()
   }, [])
 
   // Group by category
-  const categories = products.reduce<Record<string, Product[]>>((acc, p) => {
-    const cat = p.category_name || 'Autres'
+  const categories = products.reduce<Record<string, typeof products>>((acc, p) => {
+    const cat = p.category_name
     if (!acc[cat]) acc[cat] = []
     acc[cat].push(p)
     return acc
@@ -65,18 +85,16 @@ export function Catalogue() {
   // Filter
   const filteredProducts = products.filter(p => {
     const matchSearch = !search || p.designation.toLowerCase().includes(search.toLowerCase()) || p.ref_produit.toLowerCase().includes(search.toLowerCase())
-    const matchCategory = !activeCategory || (p.category_name || 'Autres') === activeCategory
+    const matchCategory = !activeCategory || p.category_name === activeCategory
     return matchSearch && matchCategory
   })
 
-  const filteredCategories = activeCategory
-    ? { [activeCategory]: filteredProducts }
-    : filteredProducts.reduce<Record<string, Product[]>>((acc, p) => {
-        const cat = p.category_name || 'Autres'
-        if (!acc[cat]) acc[cat] = []
-        acc[cat].push(p)
-        return acc
-      }, {})
+  const filteredCategories = filteredProducts.reduce<Record<string, typeof products>>((acc, p) => {
+    const cat = p.category_name
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(p)
+    return acc
+  }, {})
 
   const totalProducts = products.length
 
@@ -159,20 +177,11 @@ export function Catalogue() {
                           key={p.id}
                           className="group bg-white rounded-xl border border-gray-100 p-4 hover:border-brand-gold/30 hover:shadow-md transition-all duration-200"
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors">
-                                {p.designation}
-                              </h4>
-                              <p className="text-xs text-gray-400 mt-0.5">{p.ref_produit}</p>
-                            </div>
-                            <span className={`ml-3 text-xs px-2 py-1 rounded-full font-medium flex-shrink-0 ${
-                              p.stock_actual > 0
-                                ? 'bg-green-50 text-green-700'
-                                : 'bg-red-50 text-red-600'
-                            }`}>
-                              {p.stock_actual > 0 ? 'En stock' : 'Rupture'}
-                            </span>
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors">
+                              {p.designation}
+                            </h4>
+                            <p className="text-xs text-gray-400 mt-0.5">{p.ref_produit}</p>
                           </div>
                           <div className="flex items-end justify-between mt-3">
                             <span className="text-lg font-bold text-brand-blue">{formatFCFA(p.selling_price)}</span>
