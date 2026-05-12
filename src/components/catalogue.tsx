@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { FadeIn } from './animations'
+import { useQuoteCart } from '@/lib/quote-cart'
 
 interface Product {
   id: string
@@ -47,25 +48,27 @@ Pouvez-vous confirmer la disponibilité ?`
   return `https://wa.me/221763506867?text=${encodeURIComponent(message)}`
 }
 
-function whatsappQuoteLink(product: Product) {
-  const message = `Bonjour Q2M, je souhaite une demande de devis pour :
-
-📦 *${product.designation}*
-🔖 Réf: ${product.ref_produit}
-💰 Prix indicatif: ${formatFCFA(product.selling_price)} / ${product.unit}
-
-Quantité souhaitée :
-Délai souhaité :
-
-Pouvez-vous me confirmer le prix et la disponibilité ?`
-  return `https://wa.me/221763506867?text=${encodeURIComponent(message)}`
-}
 
 export function Catalogue() {
   const [products, setProducts] = useState<(Product & { category_name: string })[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [addedToast, setAddedToast] = useState<string | null>(null)
+  const { items: cartItems, addItem } = useQuoteCart()
+
+  function handleAddToQuote(product: Product & { category_name: string }) {
+    addItem({
+      id: product.id,
+      ref_produit: product.ref_produit,
+      designation: product.designation,
+      selling_price: product.selling_price,
+      unit: product.unit,
+      category_name: product.category_name,
+    })
+    setAddedToast(product.id)
+    setTimeout(() => setAddedToast(prev => prev === product.id ? null : prev), 1500)
+  }
 
   useEffect(() => {
     async function load() {
@@ -231,7 +234,7 @@ export function Catalogue() {
                             <span className="text-xs text-gray-400">/ {p.unit}</span>
                           </div>
 
-                          {/* Action buttons: Commander + Devis */}
+                          {/* Action buttons: Commander + Ajouter au devis */}
                           <div className="grid grid-cols-2 gap-2">
                             <a
                               href={whatsappOrderLink(p)}
@@ -244,17 +247,39 @@ export function Catalogue() {
                               </svg>
                               Commander
                             </a>
-                            <a
-                              href={whatsappQuoteLink(p)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white px-3 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all hover:shadow-md group/btn"
+                            <button
+                              onClick={() => handleAddToQuote(p)}
+                              className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all hover:shadow-md group/btn relative ${
+                                addedToast === p.id
+                                  ? 'bg-green-100 text-green-700'
+                                  : cartItems.some(i => i.id === p.id)
+                                  ? 'bg-brand-gold text-white hover:bg-brand-gold-dark'
+                                  : 'bg-brand-blue text-white hover:bg-brand-blue-dark'
+                              }`}
                             >
-                              <svg className="w-4 h-4 group-hover/btn:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                              </svg>
-                              Devis
-                            </a>
+                              {addedToast === p.id ? (
+                                <>
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  Ajoute !
+                                </>
+                              ) : cartItems.some(i => i.id === p.id) ? (
+                                <>
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                  Au devis
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-4 h-4 group-hover/btn:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                  </svg>
+                                  Devis
+                                </>
+                              )}
+                            </button>
                           </div>
                         </div>
                       </div>
