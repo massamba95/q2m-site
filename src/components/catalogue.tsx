@@ -105,21 +105,31 @@ export function Catalogue() {
   })
 
   return (
-    <section id="catalogue" className="py-24 bg-white relative overflow-hidden">
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-brand-gold/5 rounded-full blur-3xl -translate-x-1/2" />
-      <div className="absolute top-1/4 right-0 w-72 h-72 bg-brand-blue/5 rounded-full blur-3xl translate-x-1/2" />
+    <section id="catalogue" className="py-24 bg-gradient-to-b from-white via-gray-50/50 to-white relative overflow-hidden">
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-brand-gold/5 rounded-full blur-3xl -translate-x-1/2" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-brand-blue/5 rounded-full blur-3xl translate-x-1/2" />
+      {/* Subtle dotted pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.4]"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #1a3a6b08 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
         <FadeIn>
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="inline-block text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+            <span className="inline-flex items-center gap-2 text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+              <span className="w-1.5 h-1.5 bg-brand-gold rounded-full" />
               Catalogue
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-6">
+            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-4">
               Nos produits
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-brand-blue to-brand-gold rounded-full mx-auto mb-5" />
             <p className="text-gray-600 text-lg leading-relaxed">
-              {loading ? 'Chargement...' : `${products.length} produits disponibles a la commande`}
+              {loading ? 'Chargement du catalogue...' : `${products.length} produits disponibles, livrés ou à retirer en magasin`}
             </p>
           </div>
         </FadeIn>
@@ -128,9 +138,9 @@ export function Catalogue() {
           <>
             {/* Search */}
             <FadeIn delay={0.1}>
-              <div className="max-w-md mx-auto mb-6">
-                <div className="relative">
-                  <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="max-w-lg mx-auto mb-8">
+                <div className="relative group">
+                  <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-brand-blue transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   <input
@@ -138,7 +148,8 @@ export function Catalogue() {
                     placeholder="Rechercher un produit..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue text-sm shadow-sm"
+                    className="w-full pl-13 pr-4 py-3.5 bg-white border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-brand-blue/40 focus:ring-4 focus:ring-brand-blue/5 text-sm shadow-sm hover:shadow-md transition-all"
+                    style={{ paddingLeft: '3.25rem' }}
                   />
                 </div>
               </div>
@@ -146,30 +157,33 @@ export function Catalogue() {
 
             {/* Category filters */}
             <FadeIn delay={0.2}>
-              <div className="flex flex-wrap justify-center gap-2 mb-10">
+              <div className="flex flex-wrap justify-center gap-2.5 mb-12">
                 <button
                   onClick={() => setActiveCategory(null)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                     !activeCategory
-                      ? 'bg-brand-blue text-white shadow-md'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-gradient-to-r from-brand-blue to-brand-blue-light text-white shadow-lg shadow-brand-blue/25 scale-105'
+                      : 'bg-white text-gray-600 border-2 border-gray-100 hover:border-brand-blue/30 hover:text-brand-blue hover:-translate-y-0.5'
                   }`}
                 >
-                  Tous ({products.length})
+                  Tous <span className={!activeCategory ? 'text-blue-200' : 'text-gray-400'}>· {products.length}</span>
                 </button>
                 {categoryNames.map(cat => {
                   const meta = CATEGORY_META[cat] || CATEGORY_META['Autres']
+                  const isActive = activeCategory === cat
                   return (
                     <button
                       key={cat}
-                      onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                        activeCategory === cat
-                          ? 'bg-brand-blue text-white shadow-md'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      onClick={() => setActiveCategory(isActive ? null : cat)}
+                      className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-brand-blue to-brand-blue-light text-white shadow-lg shadow-brand-blue/25 scale-105'
+                          : 'bg-white text-gray-600 border-2 border-gray-100 hover:border-brand-blue/30 hover:text-brand-blue hover:-translate-y-0.5'
                       }`}
                     >
-                      {meta.icon} {cat} ({categories[cat].length})
+                      <span className="text-base">{meta.icon}</span>
+                      {cat}
+                      <span className={isActive ? 'text-blue-200' : 'text-gray-400'}>· {categories[cat].length}</span>
                     </button>
                   )
                 })}
@@ -202,30 +216,30 @@ export function Catalogue() {
                         hidden: { opacity: 0, y: 20 },
                         visible: { opacity: 1, y: 0 },
                       }}
-                      className={`group bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col ${
-                        outOfStock ? 'opacity-75' : 'hover:shadow-lg hover:-translate-y-1'
+                      className={`group relative bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col ${
+                        outOfStock ? 'opacity-80' : 'hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1.5 hover:border-brand-blue/20'
                       }`}
                     >
                       {/* Category accent */}
-                      <div className={`h-1 bg-gradient-to-r ${meta.gradient}`} />
+                      <div className={`h-1.5 bg-gradient-to-r ${meta.gradient}`} />
 
-                      <div className="p-4 flex-1 flex flex-col">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${meta.gradient} rounded-lg flex items-center justify-center text-lg flex-shrink-0`}>
+                      <div className="p-5 flex-1 flex flex-col">
+                        <div className="flex items-start gap-3 mb-4">
+                          <div className={`w-12 h-12 bg-gradient-to-br ${meta.gradient} rounded-xl flex items-center justify-center text-xl flex-shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
                             {meta.icon}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
+                            <h4 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
                               {p.designation}
                             </h4>
-                            <p className="text-xs text-gray-400 mt-0.5">{p.ref_produit}</p>
+                            <p className="text-xs text-gray-400 mt-1 font-mono">{p.ref_produit}</p>
                           </div>
                         </div>
 
-                        <div className="mt-auto pt-3 border-t border-gray-100">
-                          <div className="flex items-baseline justify-between mb-2">
-                            <span className="text-xl font-bold text-brand-blue">{formatFCFA(p.selling_price)}</span>
-                            <span className="text-xs text-gray-400">/ {p.unit}</span>
+                        <div className="mt-auto pt-4 border-t border-dashed border-gray-200">
+                          <div className="flex items-baseline justify-between mb-3">
+                            <span className="text-2xl font-bold text-brand-blue tracking-tight">{formatFCFA(p.selling_price)}</span>
+                            <span className="text-xs text-gray-400 font-medium">/ {p.unit}</span>
                           </div>
 
                           {/* Stock status */}

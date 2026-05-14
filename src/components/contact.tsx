@@ -45,12 +45,14 @@ export function Contact() {
         {/* Header */}
         <FadeIn>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+            <span className="inline-flex items-center gap-2 text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+              <span className="w-1.5 h-1.5 bg-brand-gold rounded-full" />
               Contact
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-6">
+            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-4">
               Ou nous trouver
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-brand-blue to-brand-gold rounded-full mx-auto mb-5" />
             <p className="text-gray-600 text-lg leading-relaxed">
               Venez nous rendre visite au Lac Rose ou contactez-nous directement.
             </p>

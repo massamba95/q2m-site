@@ -56,12 +56,14 @@ export function About() {
         {/* Header */}
         <FadeIn>
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+            <span className="inline-flex items-center gap-2 text-brand-gold font-semibold text-sm uppercase tracking-wider bg-brand-gold/10 px-4 py-1.5 rounded-full mb-4">
+              <span className="w-1.5 h-1.5 bg-brand-gold rounded-full" />
               A propos
             </span>
-            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-6">
+            <h2 className="text-3xl sm:text-5xl font-bold text-brand-blue mt-3 mb-4">
               Votre quincaillerie de confiance
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-brand-blue to-brand-gold rounded-full mx-auto mb-5" />
             <p className="text-gray-600 text-lg leading-relaxed">
               Depuis notre implantation au Lac Rose, <strong className="text-brand-blue">Q2M - Quincaillerie Maman Mareme</strong> accompagne
               les particuliers et les professionnels dans leurs projets de construction et d&apos;amenagement.
