@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { supabase } from './supabase'
 
-export interface QuoteItem {
+export interface CartItem {
   id: string
   ref_produit: string
   designation: string
@@ -12,10 +13,10 @@ export interface QuoteItem {
   quantity: number
 }
 
-const STORAGE_KEY = 'q2m_quote_cart'
+const STORAGE_KEY = 'q2m_cart'
 const EVENT_NAME = 'q2m-cart-updated'
 
-function readCart(): QuoteItem[] {
+function readCart(): CartItem[] {
   if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -25,13 +26,13 @@ function readCart(): QuoteItem[] {
   }
 }
 
-function writeCart(items: QuoteItem[]) {
+function writeCart(items: CartItem[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   window.dispatchEvent(new Event(EVENT_NAME))
 }
 
-export function useQuoteCart() {
-  const [items, setItems] = useState<QuoteItem[]>([])
+export function useCart() {
+  const [items, setItems] = useState<CartItem[]>([])
 
   useEffect(() => {
     setItems(readCart())
@@ -44,7 +45,7 @@ export function useQuoteCart() {
     }
   }, [])
 
-  const addItem = useCallback((item: Omit<QuoteItem, 'quantity'>, qty = 1) => {
+  const addItem = useCallback((item: Omit<CartItem, 'quantity'>, qty = 1) => {
     const current = readCart()
     const existing = current.find(i => i.id === item.id)
     if (existing) {
@@ -81,35 +82,34 @@ export function useQuoteCart() {
   return { items, totalItems, totalAmount, addItem, updateQuantity, removeItem, clearCart }
 }
 
-export function buildWhatsappQuoteMessage(items: QuoteItem[], clientName?: string, clientPhone?: string) {
-  const fmt = (n: number) =>
-    new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.round(n)) + ' FCFA'
-
-  const lines = items.map((it, i) => {
-    const total = it.quantity * it.selling_price
-    return `${i + 1}. ${it.designation} (${it.ref_produit})
-   Quantite: ${it.quantity} ${it.unit}
-   Prix indicatif: ${fmt(it.selling_price)} / ${it.unit}
-   Sous-total: ${fmt(total)}`
-  }).join('\n\n')
-
-  const total = items.reduce((s, i) => s + i.quantity * i.selling_price, 0)
-
-  let header = `Bonjour Q2M, je souhaite une demande de devis pour les produits suivants :\n\n`
-  if (clientName || clientPhone) {
-    header = `Bonjour Q2M, je souhaite une demande de devis.\n\n`
-    if (clientName) header += `Nom : ${clientName}\n`
-    if (clientPhone) header += `Telephone : ${clientPhone}\n`
-    header += `\nProduits :\n\n`
-  }
-
-  return header +
-    lines +
-    `\n\nTotal indicatif : ${fmt(total)}\n\n` +
-    `Pouvez-vous me confirmer le prix definitif, la disponibilite et le delai ?`
+export interface CheckoutInfo {
+  customerName: string
+  customerPhone: string
+  customerAddress: string
+  deliveryMode: 'retrait' | 'livraison'
+  notes: string
 }
 
-export function whatsappQuoteUrl(items: QuoteItem[], clientName?: string, clientPhone?: string) {
-  const msg = buildWhatsappQuoteMessage(items, clientName, clientPhone)
-  return `https://wa.me/221763506867?text=${encodeURIComponent(msg)}`
+export async function placeOrder(items: CartItem[], info: CheckoutInfo): Promise<{ orderNumber: string | null; error: string | null }> {
+  const payloadItems = items.map(it => ({
+    product_id: it.id,
+    ref: it.ref_produit,
+    designation: it.designation,
+    quantity: it.quantity,
+    unit_price: it.selling_price,
+  }))
+
+  const { data, error } = await supabase.rpc('place_order', {
+    p_customer_name: info.customerName,
+    p_customer_phone: info.customerPhone,
+    p_customer_address: info.customerAddress || null,
+    p_delivery_mode: info.deliveryMode,
+    p_notes: info.notes || null,
+    p_items: payloadItems,
+  })
+
+  if (error) {
+    return { orderNumber: null, error: error.message }
+  }
+  return { orderNumber: data as string, error: null }
 }
