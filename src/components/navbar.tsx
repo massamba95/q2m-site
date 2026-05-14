@@ -66,6 +66,14 @@ export function Navbar() {
                 {l.label}
               </a>
             ))}
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-devis'))}
+              className={`font-medium transition-colors text-sm hover:text-brand-gold ${
+                scrolled ? 'text-gray-600' : 'text-white/90'
+              }`}
+            >
+              Devis
+            </button>
             <a
               href="tel:+221763506867"
               className="bg-brand-gold hover:bg-brand-gold-dark text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-brand-gold/30 hover:-translate-y-0.5"
@@ -110,6 +118,12 @@ export function Navbar() {
                     {l.label}
                   </a>
                 ))}
+                <button
+                  onClick={() => { setOpen(false); window.dispatchEvent(new Event('open-devis')) }}
+                  className="block w-full text-left px-6 py-3 text-gray-600 hover:text-brand-blue hover:bg-blue-50 font-medium transition-colors"
+                >
+                  Devis
+                </button>
                 <div className="px-4 pt-2 pb-3">
                   <a
                     href="tel:+221763506867"

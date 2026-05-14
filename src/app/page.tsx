@@ -5,6 +5,7 @@ import { Catalogue } from "@/components/catalogue";
 import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
 import { Cart } from "@/components/cart";
+import { DevisModal } from "@/components/devis-modal";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <Contact />
       <Footer />
       <Cart />
+      <DevisModal />
     </main>
   );
 }
