@@ -13,6 +13,7 @@ interface Product {
   category_id: string | null
   selling_price: number
   unit: string
+  stock_actual: number
 }
 
 interface Category {
@@ -62,8 +63,8 @@ export function Catalogue() {
     async function load() {
       const [prodRes, catRes] = await Promise.all([
         supabase
-          .from('products')
-          .select('id, ref_produit, designation, category_id, selling_price, unit')
+          .from('v_product_stock')
+          .select('id, ref_produit, designation, category_id, selling_price, unit, stock_actual')
           .eq('is_active', true)
           .gt('selling_price', 0)
           .order('designation'),
@@ -78,6 +79,7 @@ export function Catalogue() {
 
       const prods = ((prodRes.data || []) as Product[]).map(p => ({
         ...p,
+        stock_actual: p.stock_actual ?? 0,
         category_name: p.category_id ? catMap[p.category_id] || 'Autres' : 'Autres',
       }))
 
@@ -191,6 +193,8 @@ export function Catalogue() {
               >
                 {filteredProducts.map(p => {
                   const meta = CATEGORY_META[p.category_name] || CATEGORY_META['Autres']
+                  const outOfStock = p.stock_actual <= 0
+                  const lowStock = p.stock_actual > 0 && p.stock_actual <= 5
                   return (
                     <motion.div
                       key={p.id}
@@ -198,7 +202,9 @@ export function Catalogue() {
                         hidden: { opacity: 0, y: 20 },
                         visible: { opacity: 1, y: 0 },
                       }}
-                      className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+                      className={`group bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 flex flex-col ${
+                        outOfStock ? 'opacity-75' : 'hover:shadow-lg hover:-translate-y-1'
+                      }`}
                     >
                       {/* Category accent */}
                       <div className={`h-1 bg-gradient-to-r ${meta.gradient}`} />
@@ -217,12 +223,40 @@ export function Catalogue() {
                         </div>
 
                         <div className="mt-auto pt-3 border-t border-gray-100">
-                          <div className="flex items-baseline justify-between mb-3">
+                          <div className="flex items-baseline justify-between mb-2">
                             <span className="text-xl font-bold text-brand-blue">{formatFCFA(p.selling_price)}</span>
                             <span className="text-xs text-gray-400">/ {p.unit}</span>
                           </div>
 
+                          {/* Stock status */}
+                          <div className="mb-3">
+                            {outOfStock ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                                Rupture de stock
+                              </span>
+                            ) : lowStock ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
+                                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                                Plus que {p.stock_actual} en stock
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded-full">
+                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                En stock
+                              </span>
+                            )}
+                          </div>
+
                           {/* Add to cart button */}
+                          {outOfStock ? (
+                            <button
+                              disabled
+                              className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-400 cursor-not-allowed"
+                            >
+                              Indisponible
+                            </button>
+                          ) : (
                           <button
                             onClick={() => handleAddToCart(p)}
                             className={`flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md group/btn ${
@@ -256,6 +290,7 @@ export function Catalogue() {
                               </>
                             )}
                           </button>
+                          )}
                         </div>
                       </div>
                     </motion.div>
