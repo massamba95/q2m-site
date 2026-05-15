@@ -10,6 +10,7 @@ export interface CartItem {
   selling_price: number
   unit: string
   category_name: string
+  image_url?: string | null
   quantity: number
 }
 

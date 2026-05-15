@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 import { useCart, placeOrder, type CheckoutInfo } from '@/lib/cart'
 
 function formatFCFA(n: number) {
@@ -142,7 +143,18 @@ export function Cart() {
                     ) : (
                       items.map(item => (
                         <div key={item.id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                          <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="flex items-start gap-3 mb-2">
+                            {item.image_url && (
+                              <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-white flex-shrink-0">
+                                <Image
+                                  src={item.image_url}
+                                  alt={item.designation}
+                                  fill
+                                  sizes="56px"
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
                             <div className="min-w-0 flex-1">
                               <h4 className="font-semibold text-sm text-gray-900 leading-snug">{item.designation}</h4>
                               <p className="text-xs text-gray-400 mt-0.5">{item.ref_produit}</p>

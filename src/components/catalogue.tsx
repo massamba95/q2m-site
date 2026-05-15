@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { FadeIn } from './animations'
 import { useCart } from '@/lib/cart'
@@ -14,6 +15,7 @@ interface Product {
   selling_price: number
   unit: string
   stock_actual: number
+  image_url: string | null
 }
 
 interface Category {
@@ -54,6 +56,7 @@ export function Catalogue() {
       selling_price: product.selling_price,
       unit: product.unit,
       category_name: product.category_name,
+      image_url: product.image_url,
     })
     setAddedToast(product.id)
     setTimeout(() => setAddedToast(prev => prev === product.id ? null : prev), 1500)
@@ -64,7 +67,7 @@ export function Catalogue() {
       const [prodRes, catRes] = await Promise.all([
         supabase
           .from('v_product_stock')
-          .select('id, ref_produit, designation, category_id, selling_price, unit, stock_actual')
+          .select('id, ref_produit, designation, category_id, selling_price, unit, stock_actual, image_url')
           .eq('is_active', true)
           .gt('selling_price', 0)
           .order('designation'),
@@ -220,20 +223,33 @@ export function Catalogue() {
                         outOfStock ? 'opacity-80' : 'hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1.5 hover:border-brand-blue/20'
                       }`}
                     >
-                      {/* Category accent */}
-                      <div className={`h-1.5 bg-gradient-to-r ${meta.gradient}`} />
-
-                      <div className="p-5 flex-1 flex flex-col">
-                        <div className="flex items-start gap-3 mb-4">
-                          <div className={`w-12 h-12 bg-gradient-to-br ${meta.gradient} rounded-xl flex items-center justify-center text-xl flex-shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                      {/* Product image or category gradient fallback */}
+                      {p.image_url ? (
+                        <div className="relative aspect-square bg-gray-50 overflow-hidden">
+                          <Image
+                            src={p.image_url}
+                            alt={p.designation}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className={`absolute top-3 left-3 w-9 h-9 bg-gradient-to-br ${meta.gradient} rounded-lg flex items-center justify-center text-lg shadow-lg`}>
                             {meta.icon}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
-                              {p.designation}
-                            </h4>
-                            <p className="text-xs text-gray-400 mt-1 font-mono">{p.ref_produit}</p>
-                          </div>
+                        </div>
+                      ) : (
+                        <div className={`aspect-square bg-gradient-to-br ${meta.gradient} flex items-center justify-center relative overflow-hidden`}>
+                          <span className="text-7xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">{meta.icon}</span>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        </div>
+                      )}
+
+                      <div className="p-5 flex-1 flex flex-col">
+                        <div className="mb-4">
+                          <h4 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
+                            {p.designation}
+                          </h4>
+                          <p className="text-xs text-gray-400 mt-1 font-mono">{p.ref_produit}</p>
                         </div>
 
                         <div className="mt-auto pt-4 border-t border-dashed border-gray-200">
