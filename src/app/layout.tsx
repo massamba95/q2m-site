@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { BRAND } from "@/lib/branding";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -9,12 +10,12 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Q2M - Quincaillerie Maman Marème | Lac Rose, Dakar",
-  description: "Quincaillerie Maman Marème (Q2M) - Votre quincaillerie de confiance au Lac Rose, Dakar. Matériaux de construction, outillage, plomberie, électricité et plus.",
-  keywords: "quincaillerie, Lac Rose, Dakar, Sénégal, matériaux construction, outillage, Q2M",
+  title: `${BRAND.name} - ${BRAND.fullName} | ${BRAND.city}`,
+  description: `${BRAND.fullName} (${BRAND.name}) - Votre ${BRAND.tagline.toLowerCase()} de confiance au ${BRAND.city}. Matériaux de construction, outillage, plomberie, électricité et plus.`,
+  keywords: `quincaillerie, ${BRAND.city}, Sénégal, matériaux construction, outillage, ${BRAND.name}`,
   openGraph: {
-    title: "Q2M - Quincaillerie Maman Marème",
-    description: "Votre quincaillerie de confiance au Lac Rose, Dakar",
+    title: `${BRAND.name} - ${BRAND.fullName}`,
+    description: `Votre ${BRAND.tagline.toLowerCase()} de confiance au ${BRAND.city}`,
     type: "website",
   },
 };

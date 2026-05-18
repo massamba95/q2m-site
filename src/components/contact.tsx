@@ -1,6 +1,7 @@
 'use client'
 
 import { FadeIn, StaggerContainer, StaggerItem } from './animations'
+import { BRAND } from '@/lib/branding'
 
 export function Contact() {
   const contacts = [
@@ -11,7 +12,7 @@ export function Contact() {
         </svg>
       ),
       label: 'Telephone',
-      values: ['76 350 68 67', '77 952 59 24', '77 672 79 80'],
+      values: BRAND.phones,
       gradient: 'from-blue-500 to-brand-blue',
     },
     {
@@ -22,7 +23,7 @@ export function Contact() {
         </svg>
       ),
       label: 'Adresse',
-      values: ['Lac Rose', 'Dakar, Senegal'],
+      values: BRAND.address.split(',').map(s => s.trim()),
       gradient: 'from-brand-gold to-amber-500',
     },
     {
@@ -54,7 +55,7 @@ export function Contact() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-brand-blue to-brand-gold rounded-full mx-auto mb-5" />
             <p className="text-gray-600 text-lg leading-relaxed">
-              Venez nous rendre visite au Lac Rose ou contactez-nous directement.
+              Venez nous rendre visite au {BRAND.city.split(',')[0]} ou contactez-nous directement.
             </p>
           </div>
         </FadeIn>
@@ -83,7 +84,7 @@ export function Contact() {
             {/* WhatsApp CTA */}
             <FadeIn delay={0.3}>
               <a
-                href="https://wa.me/221763506867"
+                href={`https://wa.me/${BRAND.whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-5 rounded-2xl font-semibold text-lg transition-all shadow-lg shadow-green-500/20 hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-1"
@@ -107,7 +108,7 @@ export function Contact() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Localisation Q2M - Lac Rose, Dakar"
+                title={`Localisation ${BRAND.name} - ${BRAND.city}`}
               />
             </div>
           </FadeIn>

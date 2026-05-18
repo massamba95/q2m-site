@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { BRAND } from '@/lib/branding'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
@@ -37,15 +38,15 @@ export function Navbar() {
           {/* Logo */}
           <a href="#accueil" className="flex items-center gap-3 group">
             <Image
-              src="/logo_Q2M.jpg"
-              alt="Q2M"
+              src={BRAND.logoUrl}
+              alt={BRAND.name}
               width={44}
               height={44}
               className="rounded-full shadow-md group-hover:shadow-lg transition-shadow"
             />
             <div>
               <span className={`font-bold text-xl transition-colors ${scrolled ? 'text-brand-blue' : 'text-white'}`}>
-                Q2M
+                {BRAND.name}
               </span>
               <span className={`hidden sm:inline text-sm ml-2 transition-colors ${scrolled ? 'text-brand-gold' : 'text-brand-gold-light'}`}>
                 Quincaillerie
@@ -77,7 +78,7 @@ export function Navbar() {
               Demander un devis
             </button>
             <a
-              href="tel:+221763506867"
+              href={`tel:${BRAND.primaryTelDial}`}
               className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-dark text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:shadow-lg hover:shadow-brand-gold/30 hover:-translate-y-0.5"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +132,7 @@ export function Navbar() {
                     Demander un devis
                   </button>
                   <a
-                    href="tel:+221763506867"
+                    href={`tel:${BRAND.primaryTelDial}`}
                     className="block text-center bg-brand-gold hover:bg-brand-gold-dark text-white px-5 py-3 rounded-full font-semibold transition-colors"
                   >
                     Appelez-nous

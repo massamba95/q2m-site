@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { FadeIn } from './animations'
 import { useCart } from '@/lib/cart'
+import { BRAND } from '@/lib/branding'
 
 interface Product {
   id: string
@@ -351,7 +352,7 @@ export function Catalogue() {
               <p className="text-gray-600 text-lg mb-5">Vous ne trouvez pas ce que vous cherchez ?</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="tel:+221763506867"
+                  href={`tel:${BRAND.primaryTelDial}`}
                   className="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-brand-blue-dark text-white px-8 py-3.5 rounded-full font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -360,7 +361,7 @@ export function Catalogue() {
                   Appelez-nous
                 </a>
                 <a
-                  href="https://wa.me/221763506867"
+                  href={`https://wa.me/${BRAND.whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-3.5 rounded-full font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"

@@ -1,6 +1,7 @@
 'use client'
 
 import { FadeIn, StaggerContainer, StaggerItem } from './animations'
+import { BRAND } from '@/lib/branding'
 
 export function About() {
   const values = [
@@ -65,7 +66,7 @@ export function About() {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-brand-blue to-brand-gold rounded-full mx-auto mb-5" />
             <p className="text-gray-600 text-lg leading-relaxed">
-              Depuis notre implantation au Lac Rose, <strong className="text-brand-blue">Q2M - Quincaillerie Maman Mareme</strong> accompagne
+              Depuis notre implantation au {BRAND.city.split(',')[0]}, <strong className="text-brand-blue">{BRAND.name} - {BRAND.fullName}</strong> accompagne
               les particuliers et les professionnels dans leurs projets de construction et d&apos;amenagement.
             </p>
           </div>

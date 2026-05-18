@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
+import { BRAND } from '@/lib/branding'
 
 interface Product {
   id: string
@@ -84,14 +85,14 @@ export function DevisModal() {
         (l.product.selling_price > 0 ? `\n   Prix indicatif : ${formatFCFA(l.product.selling_price)} / ${l.product.unit}` : '')
     }).join('\n\n')
 
-    let msg = `Bonjour Q2M, je souhaite une demande de devis.\n\n`
+    let msg = `Bonjour ${BRAND.name}, je souhaite une demande de devis.\n\n`
     msg += `Nom : ${name}\n`
     msg += `Téléphone : ${phone}\n\n`
     msg += `Produits :\n\n${productLines}`
     if (total > 0) msg += `\n\nTotal indicatif : ${formatFCFA(total)}`
     if (notes.trim()) msg += `\n\nNote : ${notes.trim()}`
     msg += `\n\nMerci de me faire une proposition de prix, la disponibilité et le délai.`
-    return `https://wa.me/221763506867?text=${encodeURIComponent(msg)}`
+    return `https://wa.me/${BRAND.whatsappNumber}?text=${encodeURIComponent(msg)}`
   }
 
   function close() {

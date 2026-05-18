@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { BRAND } from '@/lib/branding'
 
 export function Hero() {
   return (
@@ -44,7 +45,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 glass text-brand-gold-light px-5 py-2.5 rounded-full text-sm font-medium mb-8"
             >
               <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse" />
-              Lac Rose, Dakar, Senegal
+              {BRAND.address}
             </motion.div>
 
             <motion.h1
@@ -53,8 +54,8 @@ export function Hero() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6"
             >
-              Quincaillerie{' '}
-              <span className="text-gradient">Maman Mareme</span>
+              {BRAND.fullName.split(' ')[0]}{' '}
+              <span className="text-gradient">{BRAND.fullName.split(' ').slice(1).join(' ')}</span>
             </motion.h1>
 
             <motion.p
@@ -125,8 +126,8 @@ export function Hero() {
               <div className="absolute -inset-4 border-2 border-brand-gold/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
               <div className="absolute -inset-8 border border-white/10 rounded-full animate-spin" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
               <Image
-                src="/logo_Q2M.jpg"
-                alt="Q2M - Quincaillerie Maman Mareme"
+                src={BRAND.logoUrl}
+                alt={`${BRAND.name} - ${BRAND.fullName}`}
                 width={320}
                 height={320}
                 className="relative rounded-full shadow-2xl border-4 border-white/20"
@@ -146,7 +147,7 @@ export function Hero() {
           {[
             { value: '300+', label: 'Produits disponibles' },
             { value: '7j/7', label: 'Toujours ouvert' },
-            { value: 'N°1', label: 'Au Lac Rose' },
+            { value: 'N°1', label: `Au ${BRAND.city.split(',')[0]}` },
           ].map(stat => (
             <div key={stat.label} className="glass rounded-2xl p-4 text-center hover:bg-white/15 transition-colors">
               <div className="text-2xl sm:text-3xl font-bold text-brand-gold">{stat.value}</div>
