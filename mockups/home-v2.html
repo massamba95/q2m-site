@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q2M — Quincaillerie Maman Marème · Lac Rose, Dakar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Manrope', sans-serif; }
+  .text-gradient { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .bg-gradient-hero { background: linear-gradient(135deg, #0a1628 0%, #1e3a6b 60%, #2d4f8f 100%); }
+</style>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'brand-blue': '#1e3a6b',
+          'brand-blue-light': '#2d4f8f',
+          'brand-gold': '#fbbf24',
+          'navy': { 800: '#0c1f3d', 900: '#0a1628' }
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-white">
+
+<!-- ============================ -->
+<!-- 1. TOP BAR (bandeau utilité)  -->
+<!-- ============================ -->
+<div class="bg-navy-900 text-white text-xs">
+  <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="tel:+221761234567" class="flex items-center gap-1.5 hover:text-brand-gold transition">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        <span>📞 +221 76 350 68 67 · Lac Rose, Dakar</span>
+      </a>
+    </div>
+    <div class="hidden sm:flex items-center gap-4">
+      <a href="https://wa.me/221763506867" target="_blank" class="flex items-center gap-1 hover:text-brand-gold transition">
+        <span>💬 WhatsApp</span>
+      </a>
+      <span class="text-gray-500">|</span>
+      <span class="text-gray-400">Lun-Sam · 8h-19h</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ -->
+<!-- 2. HEADER (logo + recherche + panier) -->
+<!-- ============================ -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
+    <a href="/" class="flex items-center gap-2.5">
+      <img src="logo_Q2M.jpg" alt="Q2M" class="w-14 h-14 rounded-full object-cover shadow-sm">
+      <div>
+        <div class="font-display font-extrabold text-brand-blue leading-tight text-lg">Q2M</div>
+        <div class="text-[10px] text-gray-500 leading-tight">Quincaillerie Maman Marème · Lac Rose</div>
+      </div>
+    </a>
+
+    <!-- Search bar -->
+    <div class="flex-1 relative hidden md:block">
+      <input type="text" placeholder="Rechercher : ciment, fer 8, peinture, robinet..."
+        class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition">
+      <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <a href="#" class="hidden sm:flex flex-col items-center justify-center px-3 hover:text-brand-blue transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        <span class="text-[10px] text-gray-500 mt-0.5">Compte</span>
+      </a>
+      <button class="relative flex flex-col items-center justify-center px-3 hover:text-brand-blue transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
+        <span class="text-[10px] text-gray-500 mt-0.5">Panier</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile search -->
+  <div class="md:hidden px-4 pb-3">
+    <div class="relative">
+      <input type="text" placeholder="Rechercher un produit..."
+        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm">
+      <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============================ -->
+<!-- 3. MEGA-MENU (navigation)    -->
+<!-- ============================ -->
+<nav class="bg-brand-blue text-white">
+  <div class="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto">
+    <button class="px-4 py-3 hover:bg-brand-blue-light transition flex items-center gap-2 font-semibold border-r border-white/10 whitespace-nowrap">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      Tous les produits
+    </button>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Matériaux</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Plomberie</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Électricité</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Outillage</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Peinture</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Accessoires</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Éclairage</a>
+    <a href="#" class="px-4 py-3 hover:bg-brand-blue-light transition text-sm whitespace-nowrap font-medium">Consommables</a>
+    <div class="ml-auto flex items-center gap-3 pr-2 whitespace-nowrap">
+      <a href="#" class="px-3 py-1 bg-red-500 hover:bg-red-600 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+        🔥 Promotions
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================ -->
+<!-- 4. HERO                       -->
+<!-- ============================ -->
+<section class="bg-gradient-hero text-white relative overflow-hidden">
+  <div class="absolute -top-40 -right-40 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-brand-blue-light/30 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-4 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative">
+    <div>
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/15 border border-brand-gold/30 text-brand-gold text-xs font-semibold mb-6">
+        <span class="w-2 h-2 bg-brand-gold rounded-full animate-pulse"></span>
+        Quincaillerie de référence · Lac Rose · Dakar
+      </div>
+      <h1 class="font-display text-4xl lg:text-6xl font-black leading-[1.05] tracking-tight">
+        Tout pour vos
+        <span class="text-gradient">chantiers</span>
+        et travaux
+      </h1>
+      <p class="mt-6 text-lg text-blue-100 max-w-xl">
+        Plus de 400 produits en stock à Lac Rose : matériaux de construction, plomberie,
+        électricité, outillage. Devis rapide · Retrait magasin · Livraison Dakar.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#catalogue" class="inline-flex items-center gap-2 bg-brand-gold hover:bg-amber-500 text-navy-900 px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-brand-gold/30 transition hover:scale-105">
+          Voir le catalogue
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <a href="https://wa.me/221763506867" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/20 px-6 py-3.5 rounded-xl font-semibold transition">
+          💬 Demander un devis
+        </a>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+        <div>
+          <div class="font-display text-2xl font-extrabold text-brand-gold">400+</div>
+          <div class="text-xs text-blue-200">Produits en stock</div>
+        </div>
+        <div>
+          <div class="font-display text-2xl font-extrabold text-brand-gold">15</div>
+          <div class="text-xs text-blue-200">Ans d'expérience</div>
+        </div>
+        <div>
+          <div class="font-display text-2xl font-extrabold text-brand-gold">24h</div>
+          <div class="text-xs text-blue-200">Livraison Dakar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Search box card -->
+    <div class="hidden lg:block">
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-8 relative">
+        <div class="absolute -top-3 -left-3 bg-brand-gold text-navy-900 text-xs font-bold px-3 py-1 rounded-full">★ TROUVEZ VITE</div>
+        <h3 class="font-display text-2xl font-bold mb-4">Que cherchez-vous ?</h3>
+        <div class="space-y-3">
+          <select class="w-full bg-white/95 text-navy-900 rounded-lg px-4 py-3 font-medium">
+            <option>Choisir une catégorie...</option>
+            <option>Matériaux</option>
+            <option>Plomberie</option>
+            <option>Électricité</option>
+            <option>Outillage</option>
+            <option>Peinture</option>
+          </select>
+          <input type="text" placeholder="Type de produit (ex: ciment, robinet, ampoule...)"
+            class="w-full bg-white/95 text-navy-900 placeholder-gray-500 rounded-lg px-4 py-3">
+          <button class="w-full bg-brand-gold hover:bg-amber-500 text-navy-900 px-4 py-3 rounded-lg font-bold transition">
+            🔍 Rechercher dans le catalogue
+          </button>
+        </div>
+        <p class="mt-4 text-xs text-blue-200 text-center">
+          ou appelez directement : <a href="tel:+221763506867" class="font-bold text-brand-gold">+221 76 350 68 67</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 5. TRUST BAR (Mentions)     -->
+<!-- ============================ -->
+<section class="bg-gray-50 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue text-xl">🚚</div>
+      <div>
+        <div class="font-bold text-sm">Livraison Dakar</div>
+        <div class="text-xs text-gray-500">24h-48h · Wave OK</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue text-xl">💳</div>
+      <div>
+        <div class="font-bold text-sm">Paiement flexible</div>
+        <div class="text-xs text-gray-500">Wave · Orange Money · Espèces</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue text-xl">🎯</div>
+      <div>
+        <div class="font-bold text-sm">Conseil expert</div>
+        <div class="text-xs text-gray-500">15 ans d'expérience</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center text-brand-blue text-xl">⭐</div>
+      <div>
+        <div class="font-bold text-sm">Clients satisfaits</div>
+        <div class="text-xs text-gray-500">+1000 chantiers servis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 6. CATÉGORIES VISUELLES     -->
+<!-- ============================ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <div class="inline-block px-4 py-1.5 rounded-full bg-brand-gold/15 border border-brand-gold/30 text-brand-gold text-xs font-bold uppercase tracking-wider mb-3">
+        Notre catalogue
+      </div>
+      <h2 class="font-display text-4xl lg:text-5xl font-black text-navy-900 tracking-tight">
+        Explorez par <span class="text-gradient">catégorie</span>
+      </h2>
+      <p class="mt-3 text-gray-600 max-w-xl mx-auto">
+        Tout ce qu'il vous faut pour vos chantiers en BTP, plomberie, électricité et bien plus.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- 8 catégories visuelles -->
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gray-700 to-slate-800 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🏗️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Matériaux</div>
+          <div class="text-xs text-gray-300">Ciment, fer, parpaings...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-600 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🔧</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Plomberie</div>
+          <div class="text-xs text-gray-200">Tuyaux, robinets, joints...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-yellow-500 to-orange-500 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">⚡</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Électricité</div>
+          <div class="text-xs text-gray-200">Câbles, prises, disjoncteurs...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-red-500 to-rose-600 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🛠️</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Outillage</div>
+          <div class="text-xs text-gray-200">Marteau, scies, tournevis...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-purple-500 to-violet-600 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🎨</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Peinture</div>
+          <div class="text-xs text-gray-200">Pots, rouleaux, pinceaux...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-amber-400 to-yellow-500 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">💡</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Éclairage</div>
+          <div class="text-xs text-gray-200">Ampoules LED, plafonniers...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-teal-500 to-emerald-600 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🔗</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Accessoires</div>
+          <div class="text-xs text-gray-200">Vis, attaches, cadenas...</div>
+        </div>
+      </a>
+      <a href="#" class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-brand-blue to-blue-600 hover:shadow-2xl transition-all">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">🔩</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="font-display font-bold text-white text-lg">Quincaillerie</div>
+          <div class="text-xs text-gray-200">Verrous, charnières, serrures...</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 7. BEST-SELLERS              -->
+<!-- ============================ -->
+<section class="py-20 bg-gradient-to-b from-gray-50 to-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-end justify-between mb-10">
+      <div>
+        <div class="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider mb-3">
+          🔥 Top ventes
+        </div>
+        <h2 class="font-display text-3xl lg:text-4xl font-black text-navy-900 tracking-tight">
+          Nos produits les plus demandés
+        </h2>
+      </div>
+      <a href="#" class="hidden sm:inline-flex items-center gap-1 text-brand-blue font-semibold hover:gap-2 transition">
+        Voir tout
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- Product card 1 -->
+      <div class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-blue/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+        <div class="relative aspect-square bg-gray-100 overflow-hidden">
+          <img src="https://images.pexels.com/photos/11254961/pexels-photo-11254961.jpeg?w=400" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute top-3 left-3 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-md">★ TOP</div>
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Matériaux</div>
+          <h4 class="font-semibold text-navy-900 leading-tight line-clamp-2 mb-3 group-hover:text-brand-blue transition-colors">Ciment Diamant 50kg</h4>
+          <div class="mt-auto pt-3 border-t border-dashed">
+            <div class="flex items-baseline justify-between mb-3">
+              <span class="font-display text-xl font-extrabold text-brand-blue">6 800 FCFA</span>
+              <span class="text-xs text-gray-400">/ sac</span>
+            </div>
+            <button class="w-full bg-brand-blue hover:bg-brand-blue-light text-white px-3 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2">
+              🛒 Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product card 2 -->
+      <div class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-blue/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+        <div class="relative aspect-square bg-gray-100 overflow-hidden">
+          <img src="https://images.pexels.com/photos/1078871/pexels-photo-1078871.jpeg?w=400" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Outillage</div>
+          <h4 class="font-semibold text-navy-900 leading-tight line-clamp-2 mb-3 group-hover:text-brand-blue transition-colors">Marteau professionnel 500g</h4>
+          <div class="mt-auto pt-3 border-t border-dashed">
+            <div class="flex items-baseline justify-between mb-3">
+              <span class="font-display text-xl font-extrabold text-brand-blue">9 500 FCFA</span>
+              <span class="text-xs text-gray-400">/ pièce</span>
+            </div>
+            <button class="w-full bg-brand-blue hover:bg-brand-blue-light text-white px-3 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2">
+              🛒 Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product card 3 -->
+      <div class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-blue/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+        <div class="relative aspect-square bg-gray-100 overflow-hidden">
+          <img src="https://images.pexels.com/photos/1267325/pexels-photo-1267325.jpeg?w=400" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute top-3 right-3 px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-md">-15%</div>
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Peinture</div>
+          <h4 class="font-semibold text-navy-900 leading-tight line-clamp-2 mb-3 group-hover:text-brand-blue transition-colors">Peinture Bleu Marin 5L</h4>
+          <div class="mt-auto pt-3 border-t border-dashed">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <span class="font-display text-xl font-extrabold text-brand-blue">14 000 FCFA</span>
+                <span class="ml-2 text-xs text-gray-400 line-through">16 500</span>
+              </div>
+              <span class="text-xs text-gray-400">/ pot</span>
+            </div>
+            <button class="w-full bg-brand-blue hover:bg-brand-blue-light text-white px-3 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2">
+              🛒 Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product card 4 -->
+      <div class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-blue/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+        <div class="relative aspect-square bg-gray-100 overflow-hidden">
+          <img src="https://images.pexels.com/photos/2898199/pexels-photo-2898199.jpeg?w=400" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Éclairage</div>
+          <h4 class="font-semibold text-navy-900 leading-tight line-clamp-2 mb-3 group-hover:text-brand-blue transition-colors">Ampoule LED 9W</h4>
+          <div class="mt-auto pt-3 border-t border-dashed">
+            <div class="flex items-baseline justify-between mb-3">
+              <span class="font-display text-xl font-extrabold text-brand-blue">2 000 FCFA</span>
+              <span class="text-xs text-gray-400">/ pièce</span>
+            </div>
+            <button class="w-full bg-brand-blue hover:bg-brand-blue-light text-white px-3 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2">
+              🛒 Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 8. CALL TO ACTION DEVIS      -->
+<!-- ============================ -->
+<section class="py-16 bg-gradient-hero text-white relative overflow-hidden">
+  <div class="absolute -top-20 -right-20 w-96 h-96 bg-brand-gold/20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="max-w-5xl mx-auto px-4 text-center relative">
+    <h2 class="font-display text-3xl lg:text-5xl font-black tracking-tight mb-4">
+      Un <span class="text-gradient">chantier</span> important ?<br>
+      On vous fait un devis sur mesure.
+    </h2>
+    <p class="text-lg text-blue-100 max-w-2xl mx-auto mb-8">
+      Envoyez-nous votre liste de matériaux ou parlez-nous de votre projet. Réponse sous 2h en journée.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a href="https://wa.me/221763506867" target="_blank" class="bg-brand-gold hover:bg-amber-500 text-navy-900 px-8 py-4 rounded-xl font-bold shadow-lg shadow-brand-gold/30 transition hover:scale-105 inline-flex items-center gap-2">
+        💬 WhatsApp · Devis immédiat
+      </a>
+      <a href="tel:+221763506867" class="bg-white/10 backdrop-blur hover:bg-white/20 border border-white/20 px-8 py-4 rounded-xl font-bold transition inline-flex items-center gap-2">
+        📞 +221 76 350 68 67
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 9. SERVICES                  -->
+<!-- ============================ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <div class="inline-block px-4 py-1.5 rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold uppercase tracking-wider mb-3">
+        Services Q2M
+      </div>
+      <h2 class="font-display text-3xl lg:text-4xl font-black text-navy-900 tracking-tight">
+        Plus qu'une simple quincaillerie
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-gray-50 rounded-2xl p-8 hover:bg-gray-100 transition">
+        <div class="w-14 h-14 bg-brand-blue rounded-xl flex items-center justify-center text-2xl mb-5 text-white">🚚</div>
+        <h3 class="font-display text-xl font-bold mb-2">Livraison à Dakar</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Livraison en 24h-48h dans toute la région de Dakar. Tarifs adaptés selon le volume. Possibilité de chargement direct au magasin.</p>
+      </div>
+      <div class="bg-gray-50 rounded-2xl p-8 hover:bg-gray-100 transition">
+        <div class="w-14 h-14 bg-brand-blue rounded-xl flex items-center justify-center text-2xl mb-5 text-white">📋</div>
+        <h3 class="font-display text-xl font-bold mb-2">Devis chantier</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Envoyez-nous votre liste de matériaux par WhatsApp, on vous fait un devis groupé avec remise volume.</p>
+      </div>
+      <div class="bg-gray-50 rounded-2xl p-8 hover:bg-gray-100 transition">
+        <div class="w-14 h-14 bg-brand-blue rounded-xl flex items-center justify-center text-2xl mb-5 text-white">🎯</div>
+        <h3 class="font-display text-xl font-bold mb-2">Conseil expert</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">15 ans d'expérience à votre service. Besoin d'un avis sur la quantité, la marque, la technique ? Demandez-nous.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 10. FOOTER                   -->
+<!-- ============================ -->
+<footer class="bg-navy-900 text-gray-300 pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-4 gap-8 mb-12">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <img src="logo_Q2M.jpg" alt="Q2M" class="w-14 h-14 rounded-full object-cover">
+          <div>
+            <div class="font-display font-extrabold text-white text-lg">Q2M</div>
+            <div class="text-[10px] text-gray-400">Maman Marème · Lac Rose</div>
+          </div>
+        </div>
+        <p class="text-sm text-gray-400 leading-relaxed">
+          Votre quincaillerie de référence à Lac Rose. Tout pour vos chantiers BTP, plomberie, électricité et travaux.
+        </p>
+        <div class="mt-4 flex gap-3">
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">📱</a>
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">📘</a>
+          <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">📷</a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-display font-bold text-white mb-4">Catalogue</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-brand-gold transition">Matériaux</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Plomberie</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Électricité</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Outillage</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Peinture</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Voir tout</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-display font-bold text-white mb-4">Services</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-brand-gold transition">Livraison Dakar</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Devis chantier</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Modes de paiement</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">Retrait magasin</a></li>
+          <li><a href="#" class="hover:text-brand-gold transition">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-display font-bold text-white mb-4">Nous joindre</h4>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-2">
+            <span>📍</span>
+            <span>Lac Rose, Dakar<br>Sénégal</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span>📞</span>
+            <a href="tel:+221763506867" class="hover:text-brand-gold transition font-medium">+221 76 350 68 67</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <span>💬</span>
+            <a href="https://wa.me/221763506867" target="_blank" class="hover:text-brand-gold transition font-medium">WhatsApp Business</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <span>🕐</span>
+            <span>Lun-Sam · 8h-19h</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div>© 2026 Q2M — Quincaillerie Maman Marème. Tous droits réservés.</div>
+      <div class="flex items-center gap-4">
+        <span>Site réalisé par <a href="https://maditech.vercel.app" target="_blank" class="text-brand-gold font-semibold hover:text-amber-400">MADItech</a></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

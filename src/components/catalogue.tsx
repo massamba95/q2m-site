@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { FadeIn } from './animations'
 import { useCart } from '@/lib/cart'
 import { BRAND } from '@/lib/branding'
+import { CategoryIcon, getCategoryPhoto } from './category-icon'
 
 interface Product {
   id: string
@@ -22,6 +24,7 @@ interface Product {
 interface Category {
   id: string
   name: string
+  parent_id?: string | null
 }
 
 const CATEGORY_META: Record<string, { icon: string; gradient: string }> = {
@@ -47,6 +50,7 @@ export function Catalogue() {
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [addedToast, setAddedToast] = useState<string | null>(null)
+  const [displayCount, setDisplayCount] = useState(24)
   const { items: cartItems, addItem } = useCart()
 
   function handleAddToCart(product: Product & { category_name: string }) {
@@ -63,6 +67,8 @@ export function Catalogue() {
     setTimeout(() => setAddedToast(prev => prev === product.id ? null : prev), 1500)
   }
 
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+
   useEffect(() => {
     async function load() {
       const [prodRes, catRes] = await Promise.all([
@@ -72,19 +78,27 @@ export function Catalogue() {
           .eq('is_active', true)
           .gt('selling_price', 0)
           .order('designation'),
-        supabase.from('categories').select('id, name'),
+        supabase.from('categories').select('id, name, parent_id'),
       ])
 
       const cats = (catRes.data || []) as Category[]
-      const catMap = cats.reduce<Record<string, string>>((acc, c) => {
-        acc[c.id] = c.name
-        return acc
-      }, {})
+      setAllCategories(cats)
+      // Pour chaque produit, retrouver son nom de PARENT (pour grouper l'affichage)
+      const byId = cats.reduce<Record<string, Category>>((acc, c) => { acc[c.id] = c; return acc }, {})
+      const getParentName = (categoryId: string | null): string => {
+        if (!categoryId) return 'Autres'
+        const c = byId[categoryId]
+        if (!c) return 'Autres'
+        // Si la cat a un parent, retourner le nom du parent (regroupement parent-level)
+        if (c.parent_id && byId[c.parent_id]) return byId[c.parent_id].name
+        // Sinon, retourner son propre nom (cas catégorie sans parent)
+        return c.name
+      }
 
       const prods = ((prodRes.data || []) as Product[]).map(p => ({
         ...p,
         stock_actual: p.stock_actual ?? 0,
-        category_name: p.category_id ? catMap[p.category_id] || 'Autres' : 'Autres',
+        category_name: getParentName(p.category_id),
       }))
 
       setProducts(prods)
@@ -92,6 +106,57 @@ export function Catalogue() {
     }
     load()
   }, [])
+
+  // Écouter les events filter-category et search-products émis par Hero/MegaMenu
+  useEffect(() => {
+    function onFilter(e: Event) {
+      const id = (e as CustomEvent<string>).detail
+      setDisplayCount(24) // reset pagination
+      if (!id || id === 'all') {
+        setActiveCategory(null)
+        return
+      }
+      const cat = allCategories.find(c => c.id === id)
+      if (cat) {
+        const parent = cat.parent_id ? allCategories.find(c => c.id === cat.parent_id) : cat
+        setActiveCategory(parent?.name || cat.name)
+      }
+    }
+    function onSearch(e: Event) {
+      const term = (e as CustomEvent<string>).detail
+      if (typeof term === 'string') {
+        setSearch(term)
+        setDisplayCount(24) // reset pagination
+      }
+    }
+    window.addEventListener('filter-category', onFilter)
+    window.addEventListener('search-products', onSearch)
+    return () => {
+      window.removeEventListener('filter-category', onFilter)
+      window.removeEventListener('search-products', onSearch)
+    }
+  }, [allCategories])
+
+  // Reset pagination quand l'utilisateur tape dans la recherche locale du catalogue
+  useEffect(() => {
+    setDisplayCount(24)
+  }, [search, activeCategory])
+
+  // Lire les query params au mount pour appliquer filtre + recherche initiale
+  useEffect(() => {
+    if (typeof window === 'undefined' || allCategories.length === 0) return
+    const url = new URL(window.location.href)
+    const catId = url.searchParams.get('cat')
+    const q = url.searchParams.get('q')
+    if (catId) {
+      const cat = allCategories.find(c => c.id === catId)
+      if (cat) {
+        const parent = cat.parent_id ? allCategories.find(c => c.id === cat.parent_id) : cat
+        setActiveCategory(parent?.name || cat.name)
+      }
+    }
+    if (q) setSearch(q)
+  }, [allCategories])
 
   const categories = products.reduce<Record<string, typeof products>>((acc, p) => {
     const cat = p.category_name
@@ -102,11 +167,20 @@ export function Catalogue() {
 
   const categoryNames = Object.keys(categories).sort()
 
+  const searchActive = search.trim().length > 0
   const filteredProducts = products.filter(p => {
-    const matchSearch = !search || p.designation.toLowerCase().includes(search.toLowerCase()) || p.ref_produit.toLowerCase().includes(search.toLowerCase())
-    const matchCategory = !activeCategory || p.category_name === activeCategory
-    return matchSearch && matchCategory
+    if (searchActive) {
+      // Recherche prime : on cherche dans TOUT le catalogue, on ignore la catégorie
+      return p.designation.toLowerCase().includes(search.toLowerCase()) ||
+        p.ref_produit.toLowerCase().includes(search.toLowerCase())
+    }
+    // Sinon, filtrage par catégorie
+    return !activeCategory || p.category_name === activeCategory
   })
+
+  // Limite d'affichage initiale (avec bouton "Voir plus")
+  const visibleProducts = filteredProducts.slice(0, displayCount)
+  const hasMore = filteredProducts.length > displayCount
 
   return (
     <section id="catalogue" className="py-24 bg-gradient-to-b from-white via-gray-50/50 to-white relative overflow-hidden">
@@ -152,10 +226,25 @@ export function Catalogue() {
                     placeholder="Rechercher un produit..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-13 pr-4 py-3.5 bg-white border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-brand-blue/40 focus:ring-4 focus:ring-brand-blue/5 text-sm shadow-sm hover:shadow-md transition-all"
+                    className="w-full pl-13 pr-12 py-3.5 bg-white border-2 border-gray-100 rounded-2xl focus:outline-none focus:border-brand-blue/40 focus:ring-4 focus:ring-brand-blue/5 text-sm shadow-sm hover:shadow-md transition-all"
                     style={{ paddingLeft: '3.25rem' }}
                   />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch('')}
+                      aria-label="Effacer la recherche"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 flex items-center justify-center transition"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
+                {searchActive && activeCategory && (
+                  <div className="text-center text-xs text-gray-500 mt-2">
+                    💡 Recherche en cours sur <strong>tous les produits</strong> (filtre catégorie ignoré)
+                  </div>
+                )}
               </div>
             </FadeIn>
 
@@ -173,7 +262,6 @@ export function Catalogue() {
                   Tous <span className={!activeCategory ? 'text-blue-200' : 'text-gray-400'}>· {products.length}</span>
                 </button>
                 {categoryNames.map(cat => {
-                  const meta = CATEGORY_META[cat] || CATEGORY_META['Autres']
                   const isActive = activeCategory === cat
                   return (
                     <button
@@ -185,7 +273,7 @@ export function Catalogue() {
                           : 'bg-white text-gray-600 border-2 border-gray-100 hover:border-brand-blue/30 hover:text-brand-blue hover:-translate-y-0.5'
                       }`}
                     >
-                      <span className="text-base">{meta.icon}</span>
+                      <CategoryIcon category={cat} variant="small" className="w-4 h-4" />
                       {cat}
                       <span className={isActive ? 'text-blue-200' : 'text-gray-400'}>· {categories[cat].length}</span>
                     </button>
@@ -207,9 +295,9 @@ export function Catalogue() {
                   hidden: {},
                   visible: { transition: { staggerChildren: 0.03 } },
                 }}
-                className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
               >
-                {filteredProducts.map(p => {
+                {visibleProducts.map(p => {
                   const meta = CATEGORY_META[p.category_name] || CATEGORY_META['Autres']
                   const outOfStock = p.stock_actual <= 0
                   const lowStock = p.stock_actual > 0 && p.stock_actual <= 5
@@ -224,56 +312,73 @@ export function Catalogue() {
                         outOfStock ? 'opacity-80' : 'hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1.5 hover:border-brand-blue/20'
                       }`}
                     >
-                      {/* Product image or category gradient fallback */}
-                      {p.image_url ? (
-                        <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                          <Image
-                            src={p.image_url}
-                            alt={p.designation}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className={`absolute top-3 left-3 w-9 h-9 bg-gradient-to-br ${meta.gradient} rounded-lg flex items-center justify-center text-lg shadow-lg`}>
-                            {meta.icon}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className={`aspect-square bg-gradient-to-br ${meta.gradient} flex items-center justify-center relative overflow-hidden`}>
-                          <span className="text-7xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">{meta.icon}</span>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                        </div>
-                      )}
+                      {/* Image : 1) photo produit, 2) photo catégorie, 3) SVG fallback */}
+                      <Link href={`/produit/${p.id}`} className="block cursor-pointer">
+                        {(() => {
+                          const productImg = p.image_url
+                          const categoryImg = !productImg ? getCategoryPhoto(p.category_name) : null
+                          const finalImg = productImg || categoryImg
 
-                      <div className="p-5 flex-1 flex flex-col">
-                        <div className="mb-4">
-                          <h4 className="font-bold text-gray-900 text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
+                          if (finalImg) {
+                            return (
+                              <div className="relative aspect-square bg-gray-50 overflow-hidden">
+                                <Image
+                                  src={finalImg}
+                                  alt={p.designation}
+                                  fill
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className={`absolute top-3 left-3 w-9 h-9 bg-gradient-to-br ${meta.gradient} rounded-lg flex items-center justify-center shadow-lg p-1.5`}>
+                                  <CategoryIcon category={p.category_name} variant="large" className="w-full h-full" />
+                                </div>
+                              </div>
+                            )
+                          }
+
+                          // Dernier fallback : SVG sur gradient
+                          return (
+                            <div className={`aspect-square bg-gradient-to-br ${meta.gradient} flex items-center justify-center relative overflow-hidden`}>
+                              <div className="w-32 h-32 drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                <CategoryIcon category={p.category_name} variant="large" className="w-full h-full" />
+                              </div>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                            </div>
+                          )
+                        })()}
+                      </Link>
+
+                      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                        <Link href={`/produit/${p.id}`} className="block mb-2 sm:mb-3 cursor-pointer">
+                          <h4 className="font-bold text-gray-900 text-xs sm:text-sm leading-snug group-hover:text-brand-blue transition-colors line-clamp-2">
                             {p.designation}
                           </h4>
-                          <p className="text-xs text-gray-400 mt-1 font-mono">{p.ref_produit}</p>
-                        </div>
+                          <p className="text-[10px] sm:text-xs text-gray-400 mt-1 font-mono">{p.ref_produit}</p>
+                        </Link>
 
-                        <div className="mt-auto pt-4 border-t border-dashed border-gray-200">
-                          <div className="flex items-baseline justify-between mb-3">
-                            <span className="text-2xl font-bold text-brand-blue tracking-tight">{formatFCFA(p.selling_price)}</span>
-                            <span className="text-xs text-gray-400 font-medium">/ {p.unit}</span>
+                        <div className="mt-auto pt-2 sm:pt-3 border-t border-dashed border-gray-200">
+                          <div className="flex items-baseline justify-between mb-2 sm:mb-3 gap-1">
+                            <span className="text-base sm:text-xl font-bold text-brand-blue tracking-tight leading-none">{formatFCFA(p.selling_price)}</span>
+                            <span className="text-[10px] sm:text-xs text-gray-400 font-medium whitespace-nowrap">/ {p.unit}</span>
                           </div>
 
                           {/* Stock status */}
-                          <div className="mb-3">
+                          <div className="mb-2 sm:mb-3">
                             {outOfStock ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                                Rupture de stock
+                              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium text-red-600 bg-red-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-red-500 rounded-full" />
+                                <span className="sm:hidden">Rupture</span>
+                                <span className="hidden sm:inline">Rupture de stock</span>
                               </span>
                             ) : lowStock ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                                Plus que {p.stock_actual} en stock
+                              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium text-amber-700 bg-amber-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-500 rounded-full" />
+                                <span className="sm:hidden">Stock: {p.stock_actual}</span>
+                                <span className="hidden sm:inline">Plus que {p.stock_actual} en stock</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded-full">
-                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                              <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium text-green-700 bg-green-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full" />
                                 En stock
                               </span>
                             )}
@@ -283,14 +388,14 @@ export function Catalogue() {
                           {outOfStock ? (
                             <button
                               disabled
-                              className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-400 cursor-not-allowed"
+                              className="flex items-center justify-center gap-1 sm:gap-2 w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-gray-100 text-gray-400 cursor-not-allowed"
                             >
                               Indisponible
                             </button>
                           ) : (
                           <button
                             onClick={() => handleAddToCart(p)}
-                            className={`flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md group/btn ${
+                            className={`flex items-center justify-center gap-1 sm:gap-2 w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all hover:shadow-md group/btn ${
                               addedToast === p.id
                                 ? 'bg-green-100 text-green-700'
                                 : cartItems.some(i => i.id === p.id)
@@ -300,24 +405,27 @@ export function Catalogue() {
                           >
                             {addedToast === p.id ? (
                               <>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
-                                Ajouté au panier !
+                                <span className="sm:hidden">Ajouté !</span>
+                                <span className="hidden sm:inline">Ajouté au panier !</span>
                               </>
                             ) : cartItems.some(i => i.id === p.id) ? (
                               <>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
-                                Dans le panier — ajouter +1
+                                <span className="sm:hidden">+1</span>
+                                <span className="hidden sm:inline">Dans le panier — ajouter +1</span>
                               </>
                             ) : (
                               <>
-                                <svg className="w-4 h-4 group-hover/btn:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
-                                Ajouter au panier
+                                <span className="sm:hidden">Ajouter</span>
+                                <span className="hidden sm:inline">Ajouter au panier</span>
                               </>
                             )}
                           </button>
@@ -329,11 +437,23 @@ export function Catalogue() {
                 })}
               </motion.div>
             )}
+
+            {hasMore && (
+              <div className="text-center mt-10">
+                <button
+                  onClick={() => setDisplayCount(c => c + 24)}
+                  className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-light text-white px-8 py-3.5 rounded-xl font-semibold transition shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  Voir plus de produits
+                  <span className="text-sm opacity-80">({filteredProducts.length - displayCount} restants)</span>
+                </button>
+              </div>
+            )}
           </>
         )}
 
         {loading && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-gray-50 rounded-xl p-4 animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />

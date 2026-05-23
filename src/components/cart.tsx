@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { useCart, placeOrder, type CheckoutInfo } from '@/lib/cart'
@@ -26,6 +26,13 @@ export function Cart() {
     deliveryMode: 'retrait',
     notes: '',
   })
+
+  // Écouter l'event 'open-cart' émis par le bouton panier du header
+  useEffect(() => {
+    function onOpenCart() { setOpen(true) }
+    window.addEventListener('open-cart', onOpenCart)
+    return () => window.removeEventListener('open-cart', onOpenCart)
+  }, [])
 
   function closeDrawer() {
     setOpen(false)
@@ -60,8 +67,6 @@ export function Cart() {
     clearCart()
     setStep('done')
   }
-
-  if (totalItems === 0 && !open) return null
 
   return (
     <>

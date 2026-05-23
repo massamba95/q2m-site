@@ -1,177 +1,146 @@
 'use client'
 
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 import { BRAND } from '@/lib/branding'
 
+interface Category {
+  id: string
+  name: string
+  parent_id: string | null
+}
+
 export function Hero() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCat, setSelectedCat] = useState<string>('')
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('categories')
+        .select('id, name, parent_id')
+        .is('parent_id', null)
+        .order('name')
+      setCategories((data as Category[]) || [])
+    }
+    load()
+  }, [])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (selectedCat) params.set('cat', selectedCat)
+    if (search.trim()) params.set('q', search.trim())
+    window.location.href = `/catalogue${params.toString() ? '?' + params.toString() : ''}`
+  }
+
   return (
-    <section id="accueil" className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light animate-gradient" />
+    <section id="accueil" className="relative bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light text-white overflow-hidden">
+      <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-brand-blue-light/30 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Decorative shapes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-20 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-3xl animate-float-slow" />
-
-        {/* Geometric shapes */}
+      <div className="max-w-7xl mx-auto px-4 py-16 lg:py-24 grid lg:grid-cols-2 gap-10 items-center relative">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-32 right-[15%] w-20 h-20 border-2 border-brand-gold/20 rounded-lg"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          className="absolute bottom-40 left-[10%] w-16 h-16 border-2 border-white/10 rounded-full"
-        />
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-[60%] right-[8%] w-12 h-12 border-2 border-brand-gold/15 rounded-lg"
-        />
-      </div>
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-gold/15 border border-brand-gold/30 text-brand-gold-light text-xs font-semibold mb-6">
+            <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse"></span>
+            Quincaillerie de référence · {BRAND.city}
+          </div>
+          <h1 className="text-4xl lg:text-6xl font-black leading-[1.05] tracking-tight">
+            Tout pour vos{' '}
+            <span className="bg-gradient-to-r from-brand-gold to-amber-300 bg-clip-text text-transparent">
+              chantiers
+            </span>{' '}
+            et travaux
+          </h1>
+          <p className="mt-6 text-lg text-blue-100 max-w-xl">
+            Plus de 400 produits en stock à {BRAND.city} : matériaux de construction, plomberie, électricité, outillage.
+            Devis rapide · Retrait magasin · Livraison Dakar.
+          </p>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-32 md:py-0 w-full">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <div className="text-center md:text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 glass text-brand-gold-light px-5 py-2.5 rounded-full text-sm font-medium mb-8"
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="/catalogue"
+              className="inline-flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-dark text-brand-blue-dark px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-brand-gold/30 transition hover:scale-105"
             >
-              <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse" />
-              {BRAND.address}
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6"
+              Voir le catalogue
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-devis'))}
+              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/20 px-6 py-3.5 rounded-xl font-semibold transition"
             >
-              {BRAND.fullName.split(' ')[0]}{' '}
-              <span className="text-gradient">{BRAND.fullName.split(' ').slice(1).join(' ')}</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="text-lg sm:text-xl text-blue-100/80 mb-10 max-w-lg"
-            >
-              Votre partenaire de confiance pour tous vos materiaux de construction,
-              outillage et fournitures. Commandez en ligne, livraison ou retrait.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
-            >
-              <a
-                href="#catalogue"
-                className="group bg-brand-gold hover:bg-brand-gold-dark text-white px-8 py-4 rounded-full font-semibold text-lg transition-all hover:shadow-xl hover:shadow-brand-gold/30 hover:-translate-y-1"
-              >
-                Voir le catalogue
-                <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">&rarr;</span>
-              </a>
-              <button
-                onClick={() => window.dispatchEvent(new Event('open-devis'))}
-                className="group glass text-white px-8 py-4 rounded-full font-semibold text-lg transition-all hover:bg-white/20 hover:-translate-y-1"
-              >
-                <svg className="w-5 h-5 inline-block mr-2 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Demander un devis
-              </button>
-            </motion.div>
-
-            {/* Trust badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className="flex flex-wrap gap-x-6 gap-y-2 justify-center md:justify-start mt-8 text-sm text-blue-100/70"
-            >
-              {[
-                { icon: 'M5 13l4 4L19 7', label: 'Produits de qualité' },
-                { icon: 'M13 10V3L4 14h7v7l9-11h-7z', label: 'Livraison rapide' },
-                { icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', label: 'Retrait en magasin' },
-              ].map(b => (
-                <span key={b.label} className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-brand-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={b.icon} />
-                  </svg>
-                  {b.label}
-                </span>
-              ))}
-            </motion.div>
+              💬 Demander un devis
+            </button>
           </div>
 
-          {/* Logo / Visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
-            className="flex justify-center"
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-brand-gold/20 rounded-full blur-3xl scale-125 animate-pulse-glow" />
-              <div className="absolute -inset-4 border-2 border-brand-gold/20 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
-              <div className="absolute -inset-8 border border-white/10 rounded-full animate-spin" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
-              <Image
-                src={BRAND.logoUrl}
-                alt={`${BRAND.name} - ${BRAND.fullName}`}
-                width={320}
-                height={320}
-                className="relative rounded-full shadow-2xl border-4 border-white/20"
-                priority
-              />
+          {/* Stats */}
+          <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
+            <div>
+              <div className="text-2xl lg:text-3xl font-extrabold text-brand-gold">400+</div>
+              <div className="text-xs text-blue-200">Produits en stock</div>
             </div>
-          </motion.div>
-        </div>
+            <div>
+              <div className="text-2xl lg:text-3xl font-extrabold text-brand-gold">15</div>
+              <div className="text-xs text-blue-200">Ans d&apos;expérience</div>
+            </div>
+            <div>
+              <div className="text-2xl lg:text-3xl font-extrabold text-brand-gold">24h</div>
+              <div className="text-xs text-blue-200">Livraison Dakar</div>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Stats */}
+        {/* Right: Search card */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.6 }}
-          className="grid grid-cols-3 gap-4 mt-16 md:mt-24 max-w-2xl mx-auto md:mx-0"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="hidden lg:block"
         >
-          {[
-            { value: '300+', label: 'Produits disponibles' },
-            { value: '7j/7', label: 'Toujours ouvert' },
-            { value: 'N°1', label: `Au ${BRAND.city.split(',')[0]}` },
-          ].map(stat => (
-            <div key={stat.label} className="glass rounded-2xl p-4 text-center hover:bg-white/15 transition-colors">
-              <div className="text-2xl sm:text-3xl font-bold text-brand-gold">{stat.value}</div>
-              <div className="text-xs sm:text-sm text-blue-200 mt-1">{stat.label}</div>
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-8 relative">
+            <div className="absolute -top-3 -left-3 bg-brand-gold text-brand-blue-dark text-xs font-bold px-3 py-1 rounded-full">
+              ★ TROUVEZ VITE
             </div>
-          ))}
+            <h3 className="text-2xl font-bold mb-4">Que cherchez-vous ?</h3>
+            <form onSubmit={handleSearch} className="space-y-3">
+              <select
+                value={selectedCat}
+                onChange={e => setSelectedCat(e.target.value)}
+                className="w-full bg-white/95 text-brand-blue-dark rounded-lg px-4 py-3 font-medium"
+              >
+                <option value="">Choisir une catégorie...</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Type de produit (ex: ciment, robinet, ampoule...)"
+                className="w-full bg-white/95 text-brand-blue-dark placeholder-gray-500 rounded-lg px-4 py-3"
+              />
+              <button
+                type="submit"
+                className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-blue-dark px-4 py-3 rounded-lg font-bold transition"
+              >
+                🔍 Rechercher dans le catalogue
+              </button>
+            </form>
+            <p className="mt-4 text-xs text-blue-200 text-center">
+              ou appelez : <a href={`tel:${BRAND.primaryTelDial}`} className="font-bold text-brand-gold">{BRAND.phones[0]}</a>
+            </p>
+          </div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2"
-        >
-          <div className="w-1.5 h-1.5 bg-white/60 rounded-full" />
-        </motion.div>
-      </motion.div>
     </section>
   )
 }
